@@ -11,63 +11,12 @@
     <title>GolfScore</title>
 </head>
 <body>
-    <!-- <div class="container">
-        <div class="row" id="holeNumber">
-            <div class="col  border">Hole</div>
-            <div class="col  border">1</div>
-            <div class="col  border">2</div>
-            <div class="col  border">3</div>
-            <div class="col  border">4</div>
-            <div class="col  border">5</div>
-            <div class="col  border">6</div>
-            <div class="col  border">7</div>
-            <div class="col  border">8</div>
-            <div class="col  border">9</div>
-            <div class="col  border">total</div>
-        </div>
-
-        <div class="row" id="par">
-            <div class="col  border">Par</div>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <div class="col  border">total</div>
-        </div>
-
-        <div class="row" id="yardage">
-            <div class="col  border">Yardage</div>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <input type="number" class="col  border" placeholder="..."></input>
-            <div class="col  border">total</div>
-        </div>
-
-        <div class="row" id="handicap">
-            <div class="col  border">Handicap</div>
-            <div class="col  border">1</div>
-            <div class="col  border">2</div>
-            <div class="col  border">3</div>
-            <div class="col  border">4</div>
-            <div class="col  border">5</div>
-            <div class="col  border">6</div>
-            <div class="col  border">7</div>
-            <div class="col  border">8</div>
-            <div class="col  border">9</div>
-            <div class="col  border">total</div>
-        </div>
-    </div> -->
+        <button class="popup" onmouseover="setScope(true)" onmouseleave="setScope(false)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+          </svg>
+        </button>
     <div class="tableTainer">
     <table class="table-responsive table-bordered">
         <thead>
@@ -90,7 +39,7 @@
         <tbody>
             <!-- Default -->
                 <tr id="par">
-                  <th scope="row">Par</th>
+                  <div><th scope="row">Par</th></div>  
                   <td><input class="inputData" type="number" placeholder="0"></td>
                   <td><input class="inputData" type="number" placeholder="0"></td>
                   <td><input class="inputData" type="number" placeholder="0"></td>
@@ -129,20 +78,23 @@
                   <td class="tdTotal"></td>
                 </tr>
           <!-- Default -->
-          <tr>
-            <th scope="row">Player</th>
-            <td><input class="inputData" type="number" placeholder="..."></td>
-            <td><input class="inputData" type="number" placeholder="..."></td>
-            <td><input class="inputData" type="number" placeholder="..."></td>
-            <td><input class="inputData" type="number" placeholder="..."></td>
-            <td><input class="inputData" type="number" placeholder="..."></td>
-            <td><input class="inputData" type="number" placeholder="..."></td>
-            <td><input class="inputData" type="number" placeholder="..."></td>
-            <td><input class="inputData" type="number" placeholder="..."></td>
-            <td><input class="inputData" type="number" placeholder="..."></td>
-            <td class="tdTotal"></td>
-          </tr>
 
+            <tbody class="players">
+                <tr>
+            <th scope="row" id="player0"><p contenteditable="true">Player</p></th>
+            <td><input class="inputDataP" type="number" placeholder="..."></td>
+            <td><input class="inputDataP" type="number" placeholder="..."></td>
+            <td><input class="inputDataP" type="number" placeholder="..."></td>
+            <td><input class="inputDataP" type="number" placeholder="..."></td>
+            <td><input class="inputDataP" type="number" placeholder="..."></td>
+            <td><input class="inputDataP" type="number" placeholder="..."></td>
+            <td><input class="inputDataP" type="number" placeholder="..."></td>
+            <td><input class="inputDataP" type="number" placeholder="..."></td>
+            <td><input class="inputDataP" type="number" placeholder="..."></td>
+            <td></td>
+                </tbody>
+            </th>
+            
           <tr>
             <th colspan="99" class="newRow"><button class="rowBtn" onclick="newRow()">+</button></th>
           </tr>
@@ -152,12 +104,33 @@
 
 </body>
 <style>
+    .popup{
+        position: absolute;
+        top: 41px;
+        padding: 0;
+        width: 2em;
+        height: 2em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        display: none;
+        /* transform: rotateY(90deg); */
+        /* transition: transform .2s; */
+    }
+    .popup svg{
+        margin: 0;
+    }
+
+
     .tableTainer{
-        position: static;
         max-width: 98%;
+        margin: 0;
+        display: flex;
     }
     table{
+        margin: 0;
         max-width: 100%;
+        border-collapse: collapse;
     }
     [type="number"]::-webkit-inner-spin-button { 
     display: none; 
@@ -165,6 +138,7 @@
     }   
     [type="number"]{
         padding: 6%;
+        width: 88%;
     }
     #par{
         background-color: #00ffb351;
@@ -203,25 +177,55 @@
     body{
         width: 100%;
         margin: 1%;
+    }
+    *{
         font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 1em;
     }
     td, th, tr{
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        /* margin: 0; */
+        padding-top: 0;
+        padding-bottom: 0;
+        border: #263631 2px solid;
     }
     th{
         padding: 0 5px;
     }
     td:not(.tdTotal), .newRow{
-        padding: 0 !important;
+        padding: 0;
     }
     input{
-        width: 100%;
         padding: 2px 5px;
         margin: 0;
         border: none;
         background: transparent;
     }
 
+
+    .showUpX{
+        animation: appearX 200ms ease-in-out;
+    }
+    .showUpY{
+        animation: appearY 200ms ease-in-out;
+    }
+    .vanishY{
+        position: relative;
+        line-height: 0;
+        animation: removeY .2s;
+    }
+
+    @keyframes appearX{
+        from{transform: rotateY(90deg); width: 0%;}
+        to{transform: rotateY(0deg);}
+    }
+    @keyframes appearY{
+        from{transform: rotateX(90deg) scaleY(0);}
+        to{transform: rotateX(0deg);}
+    }
+    @keyframes removeY{
+        from{opacity: 100;}
+        to{opacity: 0;}
+    }
+    
 </style>
 </html>
