@@ -26,7 +26,7 @@ function returnPlayerTemplate(name, ary, idx){
     for(let i = 0; i < ary.length; i++){
         temp += '<td><input class="inputDataP" type="number" placeholder="..."></td>'
     }
-    temp += '<td class="tdTotal"></td></tr>';
+    temp += '<td colspan="2" class="tdTotal"></td></tr>';
     return temp;
 }
 
@@ -46,7 +46,7 @@ let cardObj = {
     3:{
         players: [
             { name: "Gene",
-                data: ["","","","","","","","",""],
+                data: ["","","","","","","","","",],
                 total: 0000
             },
             { name: "Stevie",
@@ -59,6 +59,7 @@ let cardObj = {
 updateTotals();
 firstLoad();
 
+
 function firstLoad(){
     for(let i = 0; i < 3; i++){ //Load Default bars
         for(let ii = 0; ii < cardObj[i].data.length; ii++){
@@ -69,6 +70,7 @@ function firstLoad(){
         totals[i].innerHTML = cardObj[i].total;
     }
     loadPlayers();
+    scale();
 }
 
 function newRow(){
@@ -124,6 +126,7 @@ function load(){
     }
 
     loadPlayers();
+    scale();
 }
 
 function loadPlayers(){
@@ -153,10 +156,7 @@ function collapseArray(collapseInputArray){
 }
 
 function changeName(that){
-    // let temp = (that.id).split('');
-    // temp = temp.splice(temp.indexOf('r') + 1);
-    extractID(that.id, "player");
-    cardObj[3].players[temp].name = that.innerHTML;
+    cardObj[3].players[extractID(that.id, "player")].name = that.innerHTML;
 }
 
 function popupAt(that, popType){
@@ -191,7 +191,7 @@ function extractID(tid, word){
 }
 
 function showItem(that){
-        that.style.display = "block";
+        that.style.display = "flex";
         // that.style.transform = "rotateX(0deg)";
         // that.style.height = "0px"
         that.classList.add('showUpX');
@@ -200,12 +200,10 @@ function showItem(that){
 function removeItem(that, loadQ){
     if(loadQ == undefined){
         that.classList.add('vanishY');
-        console.log(that.classList);
         setTimeout(removeItem, 150, that, true);
     }
     else{
         that.style.display = "none";
-        console.log("RAN");
         load();
     }
 }
@@ -214,7 +212,6 @@ function deleteItem(that){
     cardObj[3].players[selectedLiItem] = null;
     cardObj[3].players = collapseArray(cardObj[3].players);
     // load();
-    console.log(that);
     removeItem(that);
 }
 
@@ -222,8 +219,28 @@ function setScope(tomp){
     scopeQ = tomp;
 }
 
+function scale(){
+    let tback = document.getElementsByClassName("tableTainer");
+    let tomp = document.getElementsByClassName("golfTable");
+    let twidth,tompH,tompW,curH;    
 
+    for(let i = 0; i < tomp.length; i++){
+        twidth = tback[i].getBoundingClientRect().width;
 
+        tomp[i].style.position = "absolute";
+        tomp[i].style.transform = "scale(1)";
+        tompW = tomp[i].getBoundingClientRect().width;
+        tompH = tomp[i].getBoundingClientRect().height;
+        
+        tomp[i].style.transform = "scale("+ ((twidth)/tompW) +")";
+        curH = tomp[i].getBoundingClientRect().height;
+
+        tomp[i].style.left = (((twidth)/2) - (tompW/2))+ "px";
+        tomp[i].style.top = (((curH)/2) - (tompH/2)) + "px";
+
+        tback[i].style.height =  curH + "px";
+    }
+}
 
 
 function debug(DebugValue){

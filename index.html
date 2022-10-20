@@ -10,15 +10,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script> -->
     <title>GolfScore</title>
 </head>
-<body>
+<body onresize="scale()" >
+    <div class="bodyBorder">
         <button class="popup" onmouseover="setScope(true)" onmouseleave="setScope(false)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
           </svg>
         </button>
-    <div class="tableTainer">
-    <table class="table-responsive table-bordered">
+
+        <nav class="top">
+            <div class="dropdown">
+                <span class="spanBar"></span>
+                <span class="spanBar"></span>
+                <span class="spanBar"></span>
+            </div>
+        </nav>
+        
+
+<!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+<!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+<!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+
+
+    <div class="tableTainer" >
+    <table class="golfTable table-bordered">
         <thead>
           <tr>
             <th scope="col">Hole</th>
@@ -32,6 +48,7 @@
             <th scope="col">8</th>
             <th scope="col">9</th>
             <th scope="col">Out</th>
+            <th></th>
             <!-- <th scope="col">Total</th> -->
           </tr>
         </thead>
@@ -49,7 +66,7 @@
                   <td><input class="inputData" type="number" placeholder="0"></td>
                   <td><input class="inputData" type="number" placeholder="0"></td>
                   <td><input class="inputData" type="number" placeholder="0"></td>
-                  <td class="tdTotal"></td>
+                  <td colspan="2" class="tdTotal"></td>
                 </tr>
                 <tr id="yardage">
                   <th scope="row">Yardage</th>
@@ -62,7 +79,7 @@
                   <td><input class="inputData" type="number" placeholder="..."></td>
                   <td><input class="inputData" type="number" placeholder="..."></td>
                   <td><input class="inputData" type="number" placeholder="..."></td>
-                  <td class="tdTotal"></td>
+                  <td colspan="2" class="tdTotal"></td>
                 </tr>
                 <tr id="handicap">
                   <th scope="row">Handicap</th>
@@ -75,7 +92,7 @@
                   <td><input class="inputData" type="number" placeholder="..."></td>
                   <td><input class="inputData" type="number" placeholder="..."></td>
                   <td><input class="inputData" type="number" placeholder="..."></td>
-                  <td class="tdTotal"></td>
+                  <td colspan="2"class="tdTotal"></td>
                 </tr>
           <!-- Default -->
 
@@ -95,15 +112,137 @@
                 </tbody>
             </th>
             
-          <tr>
+          <!-- <tr>
             <th colspan="99" class="newRow"><button class="rowBtn" onclick="newRow()">+</button></th>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
     </div>
 
+
+<!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+<!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+<!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+
+
+    <div class="tableTainer" >
+        <table class="golfTable table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">Hole</th>
+                <th scope="col">10</th>
+                <th scope="col">11</th>
+                <th scope="col">12</th>
+                <th scope="col">13</th>
+                <th scope="col">14</th>
+                <th scope="col">15</th>
+                <th scope="col">16</th>
+                <th scope="col">17</th>
+                <th scope="col">18</th>
+                <th scope="col">In</th>
+                <th scope="col">Tot</th>
+                <!-- <th scope="col">Total</th> -->
+              </tr>
+            </thead>
+            
+            <tbody>
+                <!-- Default -->
+                    <tr id="par">
+                      <div><th scope="row">Par</th></div>  
+                      <td><input class="inputData" type="number" placeholder="0"></td>
+                      <td><input class="inputData" type="number" placeholder="0"></td>
+                      <td><input class="inputData" type="number" placeholder="0"></td>
+                      <td><input class="inputData" type="number" placeholder="0"></td>
+                      <td><input class="inputData" type="number" placeholder="0"></td>
+                      <td><input class="inputData" type="number" placeholder="0"></td>
+                      <td><input class="inputData" type="number" placeholder="0"></td>
+                      <td><input class="inputData" type="number" placeholder="0"></td>
+                      <td><input class="inputData" type="number" placeholder="0"></td>
+                      <td class="tdTotal"></td>
+                      <td class="tdNet"></td>
+                    </tr>
+                    <tr id="yardage">
+                      <th scope="row">Yardage</th>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td class="tdTotal"></td>
+                      <td class="tdNet"></td>
+                    </tr>
+                    <tr id="handicap">
+                      <th scope="row">Handicap</th>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td><input class="inputData" type="number" placeholder="..."></td>
+                      <td class="tdTotal"></td>
+                      <td class="tdNet"></td>
+                    </tr>
+              <!-- Default -->
+    
+                <tbody class="players">
+                    <tr>
+                <th scope="row" id="player0"><p contenteditable="true">Player</p></th>
+                <td><input class="inputDataP" type="number" placeholder="..."></td>
+                <td><input class="inputDataP" type="number" placeholder="..."></td>
+                <td><input class="inputDataP" type="number" placeholder="..."></td>
+                <td><input class="inputDataP" type="number" placeholder="..."></td>
+                <td><input class="inputDataP" type="number" placeholder="..."></td>
+                <td><input class="inputDataP" type="number" placeholder="..."></td>
+                <td><input class="inputDataP" type="number" placeholder="..."></td>
+                <td><input class="inputDataP" type="number" placeholder="..."></td>
+                <td><input class="inputDataP" type="number" placeholder="..."></td>
+                <td></td>
+                    </tbody>
+                </th>
+                
+              <tr>
+                <th colspan="99" class="newRow"><button class="rowBtn" onclick="newRow()">+</button></th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+
+<!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+<!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+<!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+
+
+</div>
 </body>
 <style>
+    .spanBar{
+        width: 60px;
+        background-color: rgb(255, 255, 255);
+        display: block;
+        border: 3px solid white;
+        border-radius: 1em;
+    }
+    .spanBar:not(:last-child){
+        margin-bottom: 13px;
+    }
+    nav{
+        background-color: rgb(24, 121, 51);
+        display: flex;
+        height: 5em;
+        max-width: calc(98% - 2em);
+        margin-bottom: 2em;
+        padding: 1em;
+        justify-content: space-between;
+        align-items: center;
+    }
     .popup{
         position: absolute;
         top: 41px;
@@ -114,22 +253,28 @@
         justify-content: center;
         align-items: center;
         display: none;
+        z-index: 1;
+        border: .1px solid black;
+        border-radius: 4px;
         /* transform: rotateY(90deg); */
         /* transition: transform .2s; */
     }
     .popup svg{
+        width: 90%;
+        height: 90%;
         margin: 0;
     }
-
 
     .tableTainer{
         max-width: 98%;
-        margin: 0;
         display: flex;
+        /* justify-content: center; */
+        position: relative;
     }
     table{
+        position: relative;
         margin: 0;
-        max-width: 100%;
+        width: 100%;
         border-collapse: collapse;
     }
     [type="number"]::-webkit-inner-spin-button { 
@@ -139,6 +284,13 @@
     [type="number"]{
         padding: 6%;
         width: 88%;
+        height: 100%;
+        outline: none;
+    }
+    [type="number"]:focus{
+        outline: 2px solid rgb(22, 133, 50);
+        z-index: 100;
+        box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.75);
     }
     #par{
         background-color: #00ffb351;
@@ -156,6 +308,7 @@
         height: 1.5em;
     }
     .rowBtn{
+        z-index: -1;
         transition: .1s;
         text-align: center;
         padding: 0;
@@ -175,8 +328,15 @@
         color: aliceblue;
     }
     body{
-        width: 100%;
+        overflow: hidden;
+        width: 100vw;
         margin: 1%;
+        display: flex;
+        flex-direction: column;
+    }
+    .bodyBorder{
+        width: 100%;
+        height: 100vh;
     }
     *{
         font-family: Verdana, Geneva, Tahoma, sans-serif;
