@@ -4,19 +4,35 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script defer text="text/javascript" src="/app.js"></script>
+    <script defer text="text/javascript" src="/newApp.js"></script>
     <link rel="stylesheet" href="/style.css">
     <title>Document</title>
 </head>
 <body onresize="scale()">
-    <div class="tableTainer" >
-        <table class="golfTable table-bordered">
-            <thead>
-
+    <input type="number" onchange="changeTee(this)">
+    <div class="tableTainer">
+        <table class="golfTable" id="table">
+            <thead id="tableHead">
             </thead>
-            <tbody>
-                
+            <tbody >
+                <tbody id="tableBodyDefaults"></tbody>
+                <tbody id="tableBodyPlayers"></tbody>
             </tbody>
+
+
+            <thead id="tableHeadLower">
+            </thead>
+            <tbody >
+                <tbody id="tableBodyDefaultsLower"></tbody>
+                <tbody id="tableBodyPlayersLower"></tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th class="newRowBtn" colspan="100%">
+                        <button onclick="newPlayer()">+</button>
+                    </th>
+                </tr>
+            </tfoot>
           </table>
         </div>
 </body>

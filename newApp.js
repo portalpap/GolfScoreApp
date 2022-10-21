@@ -1,3 +1,266 @@
+let resp;
+let courses;
+let courseData;
+let holeData;
+let teeBoxData;
+let table = document.getElementById("table");
+let tHead = document.getElementById("tableHead");
+let tBodyD = document.getElementById("tableBodyDefaults");
+let tBodyP = document.getElementById("tableBodyPlayers");
+
+let tHeadL = document.getElementById("tableHeadLower");
+let tBodyDL = document.getElementById("tableBodyDefaultsLower");
+let tBodyPL = document.getElementById("tableBodyPlayersLower");
+
+const link = 'https://golf-courses-api.herokuapp.com/courses/';
+async function asyncCall(url){
+    const basicFetch = await fetch(url);
+    let response = await basicFetch.json();
+    return response;}
+
+tBodyP.innerHTML = "<div style='color: red; text-align: center;'>Something went wrong :(</div>";
+asyncEvent();
+
+async function asyncEvent(){
+  tBodyP.innerHTML = "<div style='text-align: center;'>LOADING...</div>"
+  if(false){
+    resp = await asyncCall(link);
+    courses = resp.courses;
+    courseData = [];
+    for(let i = 0; i < courses.length; i++){
+      courseData[i] = 
+      (await asyncCall(link + courses[i].id)).data;
+    }
+    console.log(resp);
+    console.log(courses);
+    console.log(courseData[0].holes);
+    console.log("REJECTED");
+    }
+    else{
+        await import("./mod.mjs").then((module) => {
+            console.log(module.constHoles);
+            courseData = [];
+            courseData.push(module.constHoles);
+        });
+    }
+    firstLoad();
+}
+// <!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+// <!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
+
+let dataCount = 18;
+let firstHalf = Math.round(dataCount/2)
+let secondHalf = dataCount -firstHalf;
+let curCourse = 0;
+let curData = "";
+let curColor = "";
+let curTeeBox = 0;
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
+let players = {
+    0:{
+        name: "Gene",
+        data: [],
+    }
+}
+
+
+function firstLoad(){
+    /*------ Clear Table Data ------*/
+    tBodyP.innerHTML = ""; tBodyD.innerHTML = ""; tHead.innerHTML = "";
+    tBodyPL.innerHTML = ""; tBodyDL.innerHTML = ""; tHeadL.innerHTML = "";
+
+    holeData = courseData[curCourse].holes;
+    let tempTee = holeData[1].teeBoxes[curTeeBox];
+    let tempData;
+    /*------ Clear Table Data ------*/
+    
+
+    tempData = [];
+    addData("th", ["Yards"], "", false); // Add Yards
+    for(let i = 0; i < firstHalf; i++){
+        tempData[i] = holeData[i].teeBoxes[curTeeBox].yards;
+    }
+    addData("td", tempData, "", false);
+    addData("th", [""], "", false);
+    pushRow("bodyD");
+
+    tempData = [];
+    for(let i = firstHalf; i < dataCount; i++)
+        tempData.push(holeData[i].teeBoxes[curTeeBox].yards);
+
+    addData("th", ["Yards"], "", false);
+    addData("td", tempData, "", false);
+    pushRow("bodyDL"); // Push Yards
+
+
+
+    tempData = [];
+    addData("th", ["Hcp"], "", false); // Add Handicap
+    for(let i = 0; i < firstHalf; i++){
+        tempData[i] = holeData[i].teeBoxes[curTeeBox].hcp;
+    }
+    addData("td", tempData, "", false);
+    addData("th", [""], "", false);
+    pushRow("bodyD");
+
+    tempData = [];
+    for(let i = firstHalf; i < dataCount; i++){
+        tempData.push(holeData[i].teeBoxes[curTeeBox].hcp);
+    }
+    addData("th", ["Hcp"], "", false);
+    addData("td", tempData, "", false);
+    pushRow("bodyDL"); // Push Handicap
+
+
+    tempData = [];
+    addData("th", ["Par"], "", false); // Add par
+    for(let i = 0; i < firstHalf; i++){
+        tempData[i] = holeData[i].teeBoxes[curTeeBox].par;
+    }
+    addData("td", tempData, "", false);
+    addData("th", [""], "", false);
+    pushRow("bodyD")
+
+    tempData = [];
+    for(let i = firstHalf; i < dataCount; i++)
+        tempData.push(holeData[i].teeBoxes[curTeeBox].par);
+    addData("th", ["Par"], "", false);
+    addData("td", tempData, '', false);
+    pushRow("bodyDL"); // Push par
+
+
+    curColor = tempTee.teeColorType;
+    let temp = [...Array(firstHalf).keys()].map((n, f) => ++n);
+    temp.unshift("Player");
+    temp.push("Out");
+    addData("th", temp, "", false);
+    pushRow("head");
+    temp = [...Array(secondHalf).keys()].map((n, f) => ++n + firstHalf);
+    temp.unshift("Player");
+    temp.push("In");
+
+    addData("th", temp, "", false)
+    pushRow("headL");
+
+    loadPlayers();
+}
+
+function loadPlayers(){
+    let tempData = [];
+    tBodyP.innerHTML = "";
+    tBodyPL.innerHTML = "";
+    for (const i in players) {
+        addData("th", [players[i].name], ' class="playerName'+i+'" oninput="ensureName(this)" onblur="changeName(this,'+i+')"', true)
+        for(let ii = 0; ii < dataCount; ii++){
+            if(ii == Math.round((dataCount-1)/2)){
+                addData("th", [""], "", false)
+                pushRow("bodyP")
+                addData("th", [players[i].name], ' class="playerName'+i+'" oninput="ensureName(this)" onblur="changeName(this,'+i+')"', true)
+            }
+            if(players[i].data[ii] == undefined)
+                tempData.push("");
+            else
+                tempData.push(players[i].data[ii]);
+            addData("td", [tempData[ii]], ' oninput="changeData(this,'+ i + ","+ ii +')"', true);
+        }
+        pushRow("bodyPL");
+    }
+
+}
+
+function changeData(that, playerNum, idx){
+    let curInput = that.innerHTML;
+    if(!isNumber(curInput))
+        that.innerHTML = curInput.replace(/[^\d-]/g, ''); // The regex removes all letters & symbols, leaving only digits
+    else
+        if(curInput > 999 || curInput < 0)
+            that.innerHTML = clamp(curInput,0,999);
+ 
+    players[playerNum].data[idx] = that.innerHTML;
+    scale();
+}
+
+function changeTee(that){
+    curTeeBox = that.value;
+    firstLoad();
+}
+
+function ensureName(that){
+    if(that.innerHTML == "")
+        that.innerHTML = "&#8203"; // Replace empty space with Zero width character
+
+    let othersLikeMe = document.getElementsByClassName(that.classList.value); // Change other Player name box
+    if(othersLikeMe[1] == that)
+        othersLikeMe[0].innerHTML = that.innerHTML;
+    else
+        othersLikeMe[1].innerHTML = that.innerHTML;
+}
+
+function changeName(that, playerNum){
+    players[playerNum].name = that.innerHTML;
+}
+
+function newPlayer(){
+    let temp = Object.keys(players).length;
+    players[temp] = 
+    {
+        name: ("Player" + temp),
+        data: [],
+    }
+    loadPlayers();
+}
+
+function addData(type, data, inserts, editableQ){
+    let temp = '<' + type + ' '+ inserts +' contenteditable="'+editableQ+'">'
+
+    for(let i = 0; i < data.length; i++){
+        curData += (temp + data[i] + "</"+type+">");
+    }
+}
+
+function pushRow(key){
+    let temp = "<tr";
+    if(curColor != ""){
+        temp += ' style="background-color: '+ curColor + ';';
+        if(curColor == "white")
+            temp += ' color: black;'
+        temp += '"';
+    }
+    temp += ">" + curData + "</tr>";
+    switch (key) {
+        case "bodyP":
+            tBodyP.innerHTML += temp;
+            break;
+        case "bodyD":
+            tBodyD.innerHTML += temp;
+            break;
+        case "head":
+            tHead.innerHTML += temp;
+            break;
+
+        case "bodyPL":
+            tBodyPL.innerHTML += temp;
+            break;
+        case "bodyDL":
+            tBodyDL.innerHTML += temp;
+            break;
+        case "headL":
+            tHeadL.innerHTML += temp;
+            break;
+
+        case "table":
+            table.innerHTML += temp;
+            break;
+        default:
+            tBodyP.innerHTML += temp;
+            break;
+    }
+    if(!key.includes("L"))
+    curColor = "";
+    curData = "";
+}
+
 function scale(){
     let tback = document.getElementsByClassName("tableTainer");
     let tomp = document.getElementsByClassName("golfTable");
@@ -19,4 +282,24 @@ function scale(){
 
         tback[i].style.height =  curH + "px";
     }
+}
+
+function debug(DebugValue){
+    console.log(DebugValue);
+}
+
+function collapseArray(collapseInputArray){
+    let collapseTempArray = [];
+    for(let i = 0; i < Object.keys(collapseInputArray).length; i++)
+        if(collapseInputArray[i] != undefined)
+            collapseTempArray.push(collapseInputArray[i]);
+    return collapseTempArray;
+}
+
+function isNumber(val){
+    if (typeof val !== 'string') 
+        return false;
+      if (val.trim() === '') 
+        return false;
+    return !isNaN(val);
 }

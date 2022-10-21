@@ -26,7 +26,7 @@ function returnPlayerTemplate(name, ary, idx){
     for(let i = 0; i < ary.length; i++){
         temp += '<td><input class="inputDataP" type="number" placeholder="..."></td>'
     }
-    temp += '<td colspan="2" class="tdTotal"></td></tr>';
+    temp += '<td colspan="2"class="tdTotal"></td></tr>';
     return temp;
 }
 
