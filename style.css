@@ -27,10 +27,10 @@ body{
     display: flex;
     flex-direction: column;
 }
+
 .bodyBorder{
     width: 100%;
     height: 100vh;
-    
 }
 *{
     font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -40,8 +40,13 @@ td, th, tr{
     /* margin: 0; */
     border: #263631 2px solid;
 }
+.center{
+    display: flex;
+    justify-content: center;
+}
 th{
     padding: 0 5px;
+    display: table-cell;
 }
 td{
     padding: 1vw;
@@ -70,5 +75,5 @@ button{
     transition: .2s;
 }
 button:hover{
-    transform: scale(2) translateY(-8%);
+    transform: scale(2) translateY(-6%);
 }

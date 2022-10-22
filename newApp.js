@@ -22,9 +22,10 @@ tBodyP.innerHTML = "<div style='color: red; text-align: center;'>Something went 
 asyncEvent();
 
 async function asyncEvent(){
-  tBodyP.innerHTML = "<div style='text-align: center;'>LOADING...</div>"
-  if(false){
-    resp = await asyncCall(link);
+  tBodyP.innerHTML = "<div style='text-align: center;'>LOADING...</div>";
+  let caughtErrorQ = true;
+  resp = await asyncCall(link).catch((res) => caughtErrorQ = false);
+  if(caughtErrorQ){
     courses = resp.courses;
     courseData = [];
     for(let i = 0; i < courses.length; i++){
@@ -34,15 +35,13 @@ async function asyncEvent(){
     console.log(resp);
     console.log(courses);
     console.log(courseData[0].holes);
-    console.log("REJECTED");
     }
-    else{
+    else{ // I used this while at school because they block http requests
+        console.error("Caught Error");
         await import("./mod.mjs").then((module) => {
             console.log(module.constHoles);
-            courseData = [];
-            courseData.push(module.constHoles);
-        });
-    }
+            courseData = [module.constHoles];
+    } );    }
     firstLoad();
 }
 // <!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
@@ -56,6 +55,7 @@ let curData = "";
 let curColor = "";
 let curTeeBox = 0;
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+const summation = (accumulator, curr) => accumulator + curr;
 
 let players = {
     0:{
@@ -119,7 +119,7 @@ function firstLoad(){
         tempData[i] = holeData[i].teeBoxes[curTeeBox].par;
     }
     addData("td", tempData, "", false);
-    addData("th", [""], "", false);
+    addData("th", [tempData.reduce(summation)+'<svg width="20" height="20"></svg>'], "", false);
     pushRow("bodyD")
 
     tempData = [];
@@ -127,6 +127,7 @@ function firstLoad(){
         tempData.push(holeData[i].teeBoxes[curTeeBox].par);
     addData("th", ["Par"], "", false);
     addData("td", tempData, '', false);
+    addData("th", [tempData.reduce(summation)+'<svg width="20" height="20"></svg>'], '', false);
     pushRow("bodyDL"); // Push par
 
 
@@ -154,7 +155,7 @@ function loadPlayers(){
         addData("th", [players[i].name], ' class="playerName'+i+'" oninput="ensureName(this)" onblur="changeName(this,'+i+')"', true)
         for(let ii = 0; ii < dataCount; ii++){
             if(ii == Math.round((dataCount-1)/2)){
-                addData("th", [""], "", false)
+                addData("th", [""], ' class="outSum', false)
                 pushRow("bodyP")
                 addData("th", [players[i].name], ' class="playerName'+i+'" oninput="ensureName(this)" onblur="changeName(this,'+i+')"', true)
             }
@@ -164,21 +165,82 @@ function loadPlayers(){
                 tempData.push(players[i].data[ii]);
             addData("td", [tempData[ii]], ' oninput="changeData(this,'+ i + ","+ ii +')"', true);
         }
+        addData("th", [""], ' class="inSum"', false)
         pushRow("bodyPL");
     }
-
+    scale();
+    updateAllSums();
 }
 
 function changeData(that, playerNum, idx){
     let curInput = that.innerHTML;
     if(!isNumber(curInput))
         that.innerHTML = curInput.replace(/[^\d-]/g, ''); // The regex removes all letters & symbols, leaving only digits
-    else
+      else
         if(curInput > 999 || curInput < 0)
             that.innerHTML = clamp(curInput,0,999);
- 
+    
     players[playerNum].data[idx] = that.innerHTML;
+
+
+    if(idx < firstHalf)
+        updateSum("outSum", playerNum);
+    else
+        updateSum("inSum", playerNum);
+
     scale();
+}
+
+function updateSum(sumType, playerNum){
+    let ibot, itop;
+    let sum = 0, parSum = 0;
+    switch (sumType) {
+        case "outSum":
+            ibot = 0;
+            itop = firstHalf;
+            break;
+        case "inSum":
+            ibot = firstHalf;
+            itop = dataCount;
+            break;
+        case "totalSum":
+            ibot = 0;
+            itop = dataCount;
+            break;
+    }
+    sumType = document.getElementsByClassName(sumType)[playerNum];
+
+    for(let i = ibot; i < itop; i++){
+        if(isNumber(players[playerNum].data[i])){
+            sum += Number(players[playerNum].data[i]);
+            parSum += holeData[i].teeBoxes[curTeeBox].par;
+        }
+    }
+    let path = [
+        'd="M 69.79,227.06 C 69.79,227.06 150.00,63.98 150.00,63.98 150.00,63.98 230.21,227.06 230.21,227.06 230.21,227.06 69.79,227.06 69.79,227.06" />',
+        'd="M 230.21,125.58 C 230.21,125.58 230.21,174.42 230.21,174.42 230.21,174.42 68.37,174.42 68.37,174.42 68.37,174.42 68.37,125.58 68.37,125.58 68.37,125.58 230.21,125.58 230.21,125.58 Z" />',
+        'd="M 69.79,72.94 C 69.79,72.94 150.00,236.02 150.00,236.02 150.00,236.02 230.21,72.94 230.21,72.94 230.21,72.94 69.79,72.94 69.79,72.94" />'
+    
+    ]
+    let pColors = ["red", "#888", "lime"]
+    let arrowType = clamp(parSum - sum, -1, 1) + 1;
+    let iconBlock = 
+    '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 300 300">'+
+    '<path fill="'+pColors[arrowType]+'" stroke="black" stroke-width="1"'+
+    path[arrowType]+'</svg>';
+
+    if(sum == 0)
+        sumType.innerHTML = "";
+    else
+        sumType.innerHTML = '<div class="center">' + sum + iconBlock + '</div>';
+    scale();
+}
+
+function updateAllSums(){
+    for(let i = 0; i < players.length; i++){
+        updateSum("outSum", i);
+        updateSum("inSum", i);
+    }
 }
 
 function changeTee(that){
@@ -195,6 +257,7 @@ function ensureName(that){
         othersLikeMe[0].innerHTML = that.innerHTML;
     else
         othersLikeMe[1].innerHTML = that.innerHTML;
+    scale();
 }
 
 function changeName(that, playerNum){
