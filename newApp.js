@@ -3,6 +3,7 @@ let courses;
 let courseData;
 let holeData;
 let teeBoxData;
+let colorLib;
 let table = document.getElementById("table");
 let tHead = document.getElementById("tableHead");
 let tBodyD = document.getElementById("tableBodyDefaults");
@@ -17,6 +18,7 @@ async function asyncCall(url){
     const basicFetch = await fetch(url);
     let response = await basicFetch.json();
     return response;}
+
 
 tBodyP.innerHTML = "<div style='color: red; text-align: center;'>Something went wrong :(</div>";
 asyncEvent();
@@ -34,6 +36,7 @@ async function asyncEvent(){
     }
     console.log(resp);
     console.log(courses);
+    console.log(courseData);
     console.log(courseData[0].holes);
     }
     else{ // I used this while at school because they block http requests
@@ -41,40 +44,53 @@ async function asyncEvent(){
         await import("./mod.mjs").then((module) => {
             console.log(module.constHoles);
             courseData = [module.constHoles];
+            courses = module.constCourses;
     } );    }
+    await import("./colorLibary.mjs").then((module)=>colorLib = module.libraryColors);
+    document.getElementById("navTainer").innerHTML = '<button id="dropdown" onclick="toggle(this, '+"'onQ'"+'); toggleDropmenu()"><div class="spanBar"></div><div class="spanBar"></div><div class="spanBar"><div class="smallSpan"></div></div></div>';
+    for(let i = 0; i < courses.length; i++)
+        addCourseCard(courses[i] ,courseData[i], i);
     firstLoad();
 }
 // <!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
 // <!-- Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia doloribus laudantium voluptate! -->
 
+let pubScope = false;
 let dataCount = 18;
 let firstHalf = Math.round(dataCount/2)
-let secondHalf = dataCount -firstHalf;
+let secondHalf = dataCount - firstHalf;
 let curCourse = 0;
 let curData = "";
 let curColor = "";
 let curTeeBox = 0;
+let cInfos, cNails, navT, cItems, itemTot, infoTot, largestInfo, navType, haburgerMenu, courseCards = [];
+
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 const summation = (accumulator, curr) => accumulator + curr;
+const capFirst = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
 let players = {
     0:{
-        name: "Gene",
+        name: "Player1",
         data: [],
     }
 }
 
-
 function firstLoad(){
+    holeData = courseData[curCourse].holes;
+    changeTeeColor();
+    loadTable();
+    loadTeeboxs();
+    initNav();
+}
+
+function loadTable(){
     /*------ Clear Table Data ------*/
     tBodyP.innerHTML = ""; tBodyD.innerHTML = ""; tHead.innerHTML = "";
     tBodyPL.innerHTML = ""; tBodyDL.innerHTML = ""; tHeadL.innerHTML = "";
-
-    holeData = courseData[curCourse].holes;
-    let tempTee = holeData[1].teeBoxes[curTeeBox];
-    let tempData;
     /*------ Clear Table Data ------*/
-    
+
+    let tempData;
 
     tempData = [];
     addData("th", ["Yards"], "", false); // Add Yards
@@ -91,8 +107,8 @@ function firstLoad(){
 
     addData("th", ["Yards"], "", false);
     addData("td", tempData, "", false);
+    addData("th", [""], "", false);
     pushRow("bodyDL"); // Push Yards
-
 
 
     tempData = [];
@@ -110,6 +126,7 @@ function firstLoad(){
     }
     addData("th", ["Hcp"], "", false);
     addData("td", tempData, "", false);
+    addData("th", [""], "", false);
     pushRow("bodyDL"); // Push Handicap
 
 
@@ -119,7 +136,7 @@ function firstLoad(){
         tempData[i] = holeData[i].teeBoxes[curTeeBox].par;
     }
     addData("td", tempData, "", false);
-    addData("th", [tempData.reduce(summation)+'<svg width="20" height="20"></svg>'], "", false);
+    addData("th", [tempData.reduce(summation)], "", false);
     pushRow("bodyD")
 
     tempData = [];
@@ -127,68 +144,384 @@ function firstLoad(){
         tempData.push(holeData[i].teeBoxes[curTeeBox].par);
     addData("th", ["Par"], "", false);
     addData("td", tempData, '', false);
-    addData("th", [tempData.reduce(summation)+'<svg width="20" height="20"></svg>'], '', false);
+    addData("th", [tempData.reduce(summation)], '', false);
     pushRow("bodyDL"); // Push par
 
 
-    curColor = tempTee.teeColorType;
+    /*----- Load Header(s) -----*/
+
     let temp = [...Array(firstHalf).keys()].map((n, f) => ++n);
     temp.unshift("Player");
     temp.push("Out");
+    temp.push("Total");
     addData("th", temp, "", false);
     pushRow("head");
     temp = [...Array(secondHalf).keys()].map((n, f) => ++n + firstHalf);
     temp.unshift("Player");
     temp.push("In");
+    temp.push("");
 
     addData("th", temp, "", false)
     pushRow("headL");
 
-    loadPlayers();
+    loadPlayers();  
+}
+
+function changeTeeColor(){
+    tempColor = courseData[curCourse].holes[1].teeBoxes[curTeeBox].teeColorType;
+    document.documentElement.style
+    .setProperty('--backColor', tempColor);
+    document.documentElement.style
+    .setProperty('--txtColor', returnInvertRGB(colorLib[tempColor].rgb, true));
+    let i = 0;
+    for(let iter of document.getElementsByClassName('teeBox')){
+        if(i == curTeeBox)
+            iter.classList.add('on');
+        else
+            iter.classList.remove('on');
+        i++;
+    }
+}
+
+function initNav(){
+    
+    cInfos       = document.getElementsByClassName("cInfo");
+    cNails       = document.getElementsByClassName("tNail");
+    navT         = document.getElementById("navTainer");
+    haburgerMenu = document.getElementById("dropdown");
+    cItems       = document.getElementsByClassName("courseItem");
+    infoTot = 0, itemTot = 0;
+
+    for (const i of cInfos){
+        infoTot += (i.getBoundingClientRect().width);
+    }
+    for ( let i of cItems){
+        itemTot += (i.getBoundingClientRect().width + 16);
+    }
+    largestInfo = 0;
+    for(i of cInfos)
+        if(i.getBoundingClientRect().width > largestInfo)
+            largestInfo = i.getBoundingClientRect().width;
+
+    formatNav();
+}
+
+function formatNav(){
+    applySelect();
+if(cInfos != undefined){
+    navBox = navT.getBoundingClientRect().width;
+    if((itemTot - (infoTot - largestInfo)) > (navBox)){ // Hamburger test
+        if(navType != 3){
+            for(let oi of cItems)
+                oi.style.display = "none"
+            haburgerMenu.style.display ="flex";
+            navType = 3;
+        }
+    }
+    else if(itemTot > navBox){ // Only selected test
+        if(navType != 2){
+            makeVisible();
+            for(let i = 0; i < cInfos.length; i++)
+                if(!cItems[i].classList.contains("selected"))
+                    cInfos[i].style.display = "none";
+            navType = 2;
+        }
+    }
+    else{
+        if(navType != 1){
+            makeVisible();
+            navType = 1;
+        }
+    }
+    if(navType == 3)
+        scaleNav();
+}
+}
+
+function toggleDropmenu(removeQ){
+    let that = document.getElementById('dropdown');
+    if(removeQ != undefined)
+        that.classList.remove('onQ');
+    let dropMenu = document.getElementById('dropMenu');
+    dropMenu.classList.remove('keyclassDisappear');
+    if(that.classList.contains('onQ')){
+        dropMenu.focus();
+        for(let i = 0; i < 3; i++){
+            dropMenu.innerHTML += createLine('div', courseCards[i], 'class="dropItem"');
+            dropMenu.children[i].style.margin = "1%";
+            dropMenu.children[i].children[0].classList.remove('courseItem');
+        }
+        scaleNav();
+    }
+    else
+        dropMenu.innerHTML = '';
+}
+
+function loadTeeboxs(){
+    let teeTain = document.getElementById('teeSelect');
+    let thmp = document.createElement("div");
+    teeTain.innerHTML = '';
+    let tempBoxes = holeData[1].teeBoxes;
+    curTeeBox = clamp(curTeeBox, 0, (tempBoxes.length - 1));
+    console.log(tempBoxes);
+
+    let i = 0;
+    for(let iter of tempBoxes){
+        if(iter.teeColorType != null){
+        iter.value = i;
+        iter.id = i;
+        thmp.classList.add('teeBox');
+        thmp.addEventListener("click", function(){changeTee(iter.value);});
+        thmp.style.backgroundColor = iter.teeColorType;
+        thmp.style.color = returnInvertRGB(colorLib[iter.teeColorType].rgb, true);
+        thmp.innerText = (iter.teeType).toUpperCase();
+        if(i == curTeeBox){
+            thmp.classList.add("on");
+        }
+
+        teeTain.appendChild(thmp);
+        thmp = document.createElement("div");
+        i++;
+    }
+    }
+}
+
+function returnInvertRGB(rgb,blackQ, percentage){
+    if(blackQ == undefined)
+        blackQ = false;
+    if(percentage == undefined)
+        percentage = 1;
+    rgb = rgb.slice(4,-1);
+    rgb = rgb.split(',');
+    let temp = 0;
+    for(let i = 0; i < 3; i++){
+        rgb[i] -= (255*percentage);
+        rgb[i] = Math.abs(rgb[i]);
+        temp += rgb[i];
+    }
+    if(blackQ)
+        for(let i = 0; i < 3; i++)
+            rgb[i] = Math.round((temp/3)/255)*255
+    return 'rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
+}
+
+function scaleNav(){
+    let tWhole = document.getElementsByClassName('droptainer')[0];
+    let tback = tWhole.getElementsByClassName("dropItem");
+    let tomp = tWhole.getElementsByClassName("cItem");
+    let twidth,tompH,tompW,curScale;  
+
+if(tback.length > 0){
+    for(let i = 0; i < 3; i++){
+        tomp[i].style.transform = 'scale(1)';
+
+        twidth = tback[i].getBoundingClientRect().width;
+
+        tompW = 0;
+        for(let iter of tomp[i].children)
+            tompW += iter.getBoundingClientRect().width + 16;
+        
+        tomp[i].style.margin = '0';
+
+        tompH = 0;
+        for(let iter of tomp[i].children){
+           tompH = Math.max(tompH, iter.getBoundingClientRect().height);
+        }
+        tomp[i].style.width = (tompW - 16) + "px"
+        tomp[i].style.height = (tompH - 16) + "px"
+
+        curScale = clamp(twidth/tompW, 0, 1);
+
+        tback[i].style.height = (tompH * curScale) + 'px';
+
+        tomp[i].style.transform = 
+        'scale('+curScale+')';
+        if(curScale == 1)
+            tomp[i].style.width = '100%';
+    }
+}
+applySelect();
+}
+
+function makeVisible(){
+    haburgerMenu.style.display = "none";
+    document.getElementById('dropMenu').innerHTML = '';
+    for(let i of cItems)
+        i.style.display = "flex";
+    for(let i of cInfos)
+        i.style.display = "block";
+}
+
+function reorder(that){
+    let parent = document.getElementById('dr1');
+    let frag = document.createDocumentFragment();
+    parent.firstChild = parent.children[0];
+
+    frag.appendChild(that);
+    for(let i of parent.children)
+        if(i != that)
+            frag.appendChild(i.cloneNode(true));
+    parent.innerHTML = null;
+    parent.appendChild(frag);
+}
+
+function toggle(that, chosenClass){
+    if(that.classList.contains(chosenClass))
+        that.classList.remove(chosenClass);
+    else
+        that.classList.add(chosenClass);
+}
+
+function toggleNav(that){
+    if(that.classList.contains('onQ')){
+        navT.style.transform = 'scaleY(100%)';
+        navT.style.zIndex = '-1';
+        navT.style.height = '0';
+        navT.style.padding = '0 1em';
+        navT.classList.add('hide');
+    }
+    else{
+        navT.style.transform = 'translateY(0)';
+        navT.style.zIndex = '0 !important';
+        navT.style.height = '8em';
+        navT.style.padding = '1em';
+        navT.classList.remove('hide');
+    }
 }
 
 function loadPlayers(){
     let tempData = [];
     tBodyP.innerHTML = "";
     tBodyPL.innerHTML = "";
-    for (const i in players) {
-        addData("th", [players[i].name], ' class="playerName'+i+'" oninput="ensureName(this)" onblur="changeName(this,'+i+')"', true)
+    console.log(players);
+    for (let i in players) {
+        addData("th", [players[i].name], ' class="playerName'+i+'" onblur="hideElement()" onfocus="popupElement(0, this)" oninput="ensureName(this)" onblur="changeName(this,'+i+')"', true);
         for(let ii = 0; ii < dataCount; ii++){
-            if(ii == Math.round((dataCount-1)/2)){
-                addData("th", [""], ' class="outSum', false)
-                pushRow("bodyP")
-                addData("th", [players[i].name], ' class="playerName'+i+'" oninput="ensureName(this)" onblur="changeName(this,'+i+')"', true)
+            if(ii == Math.round((dataCount)/2)){
+                addData("th", [""], ' class="outSum', false);
+                addData("th", [""], ' class="outTot"', false);
+                pushRow("bodyP");
+                addData("th", [players[i].name], ' class="playerName'+i+'" onblur="hideElement()" onfocus="popupElement(0, this)" oninput="ensureName(this)" onblur="changeName(this,'+i+')"', true);
             }
             if(players[i].data[ii] == undefined)
                 tempData.push("");
-            else
+            else 
                 tempData.push(players[i].data[ii]);
-            addData("td", [tempData[ii]], ' oninput="changeData(this,'+ i + ","+ ii +')"', true);
+            addData("td", [tempData[tempData.length - 1]], ' oninput="changeData(this,'+ i + ","+ ii +')"', true);
         }
-        addData("th", [""], ' class="inSum"', false)
+        addData("th", [""], ' class="inSum"', false);
+        addData("th", [""], ' class="inTot"', false);
         pushRow("bodyPL");
     }
     scale();
     updateAllSums();
 }
 
+function scope(val){
+    pubScope = val;
+}
+
 function changeData(that, playerNum, idx){
     let curInput = that.innerHTML;
     if(!isNumber(curInput))
-        that.innerHTML = curInput.replace(/[^\d-]/g, ''); // The regex removes all letters & symbols, leaving only digits
+        that.innerHTML = curInput.replace(/[^\d-]/g, ''); // This regex removes all letters & symbols, leaving only digits
       else
         if(curInput > 999 || curInput < 0)
             that.innerHTML = clamp(curInput,0,999);
     
     players[playerNum].data[idx] = that.innerHTML;
 
-
+    
     if(idx < firstHalf)
         updateSum("outSum", playerNum);
     else
         updateSum("inSum", playerNum);
+    updateSum("outTot", playerNum)
+    updateSum("inTot", playerNum)
 
     scale();
+}
+
+function newPlayer(){
+    let temp = Object.keys(players).length;
+    players[temp] = 
+    {
+        name: ("Player" + (temp + 1)),
+        data: [],
+    }
+    loadPlayers();
+}
+
+function getDomain(url) {
+    var anchor = document.createElement('a');
+    anchor.setAttribute('href', url);
+    return anchor.hostname;
+}
+
+function addCourseCard(cNail, cInfo, cId){
+    let currentHtml = "", temp;
+    let testNames = ["status", "hours", "courseType", "city", "addr1", "addr2", "phone", "website"];
+    for(let i = 0; i < testNames.length; i++){
+        temp = testNames[i];
+        if(cInfo[temp] != null && cInfo[temp] != undefined){
+            if(temp == "website"){
+                temp = capFirst(testNames[i]) + ':<a target="_blank" href="'+cInfo[temp]+'">'+getDomain(cInfo[temp]).slice(4)+'</a>';
+                currentHtml += createLine("li", temp, "");
+            }
+            else{
+                temp = capFirst(testNames[i]) + ": "+ cInfo[temp];
+                currentHtml += createLine("li", temp, "");
+            }
+        }
+    }
+    currentHtml = createLine('ul', currentHtml, 'class="cInfo"');
+    temp = createLine("img", cNail.image, "", cNail.name);
+    temp += createLine("p", cNail.name, "");
+    temp = createLine("div", temp, 'class="tNail"');
+    currentHtml = createLine('div', temp + currentHtml, 'class="courseItem cItem" onclick="changeCourse('+cId+')"')
+
+    document.getElementById('navTainer').innerHTML += currentHtml;
+    courseCards.push(currentHtml);
+    // currentHtml += createLine('li',)
+}
+
+function changeCourse(val){
+    curCourse = val;
+    holeData = courseData[curCourse].holes;
+    applySelect();
+    loadTeeboxs();
+    navType = 0;
+    formatNav();
+    loadTable();
+    changeTeeColor();
+}
+
+function applySelect(){
+    let tomp = navT.getElementsByClassName('cItem');
+    let i = 0;
+    for(let iter of tomp){
+        if(i == curCourse)
+            iter.classList.add('selected');
+        else
+            iter.classList.remove('selected');
+        i++;
+    }
+    tomp = document.getElementsByClassName('dropItem');
+    i = 0;
+    for(let iter of tomp){
+        if(i == curCourse)
+            iter.classList.add('selected');
+        else
+            iter.classList.remove('selected');
+        i++;
+    }
+}
+
+function createLine(tag, guts, inserts, other){
+    if(tag == "img"){
+        return '<img src="'+guts+'" alt="'+other+'" ' + inserts + '>' 
+    }
+    return '<'+tag+' '+ inserts+'>'+ guts +'</'+tag+'>'; 
 }
 
 function updateSum(sumType, playerNum){
@@ -203,12 +536,17 @@ function updateSum(sumType, playerNum){
             ibot = firstHalf;
             itop = dataCount;
             break;
-        case "totalSum":
+        case "outTot":
+            ibot = 0;
+            itop = dataCount;
+            break;
+        case "inTot":
             ibot = 0;
             itop = dataCount;
             break;
     }
-    sumType = document.getElementsByClassName(sumType)[playerNum];
+
+   sumType = document.getElementsByClassName(sumType)[playerNum];
 
     for(let i = ibot; i < itop; i++){
         if(isNumber(players[playerNum].data[i])){
@@ -222,12 +560,17 @@ function updateSum(sumType, playerNum){
         'd="M 69.79,72.94 C 69.79,72.94 150.00,236.02 150.00,236.02 150.00,236.02 230.21,72.94 230.21,72.94 230.21,72.94 69.79,72.94 69.79,72.94" />'
     
     ]
-    let pColors = ["red", "#888", "lime"]
+    let pColors = ["red", "#888", "green"]
     let arrowType = clamp(parSum - sum, -1, 1) + 1;
-    let iconBlock = 
+    /*let iconBlock = 
     '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 300 300">'+
     '<path fill="'+pColors[arrowType]+'" stroke="black" stroke-width="1"'+
-    path[arrowType]+'</svg>';
+    path[arrowType]+'</svg>';*/
+    
+    let iconBlock = '<div class="center" style="font-size:9px;color:'+
+    pColors[arrowType]+';">('+((arrowType < 1) ? "+" : "") + 
+    (sum-parSum) +
+    ')</div>';
 
     if(sum == 0)
         sumType.innerHTML = "";
@@ -237,15 +580,15 @@ function updateSum(sumType, playerNum){
 }
 
 function updateAllSums(){
-    for(let i = 0; i < players.length; i++){
+    for(let i in players){
         updateSum("outSum", i);
         updateSum("inSum", i);
     }
 }
 
-function changeTee(that){
-    curTeeBox = that.value;
-    firstLoad();
+function changeTee(val){
+    curTeeBox = val;
+    changeTeeColor();
 }
 
 function ensureName(that){
@@ -264,16 +607,6 @@ function changeName(that, playerNum){
     players[playerNum].name = that.innerHTML;
 }
 
-function newPlayer(){
-    let temp = Object.keys(players).length;
-    players[temp] = 
-    {
-        name: ("Player" + temp),
-        data: [],
-    }
-    loadPlayers();
-}
-
 function addData(type, data, inserts, editableQ){
     let temp = '<' + type + ' '+ inserts +' contenteditable="'+editableQ+'">'
 
@@ -282,12 +615,43 @@ function addData(type, data, inserts, editableQ){
     }
 }
 
+function popupElement(type, that){
+    let popElem;
+    if(type == 0)
+        popElem = document.getElementById('popup-trash');
+    let tain = document.createElement('div');
+    tain.appendChild(popElem);
+    
+    that.appendChild(popElem);
+    that.children[0].value = that.classList[0].slice(10);
+    // that.children[0].id = "";
+    that.children[0].style.display = "flex";
+    // that.children[0].focus();
+    // that.focus();
+}
+
+function hideElement(){
+    let temp = document.getElementById('popup-trash');
+    if(pubScope){
+        deleteRow(temp.value);
+    }
+    temp.style.display = 'none';
+}
+
+function deleteRow(val){
+    players[val] = undefined;
+    players = collapseArray(players);
+    loadPlayers();
+}
+
 function pushRow(key){
     let temp = "<tr";
     if(curColor != ""){
         temp += ' style="background-color: '+ curColor + ';';
         if(curColor == "white")
             temp += ' color: black;'
+        else if(curColor == "black")
+            temp += ' color: aliceblue;'
         temp += '"';
     }
     temp += ">" + curData + "</tr>";
@@ -319,8 +683,7 @@ function pushRow(key){
             tBodyP.innerHTML += temp;
             break;
     }
-    if(!key.includes("L"))
-    curColor = "";
+
     curData = "";
 }
 
