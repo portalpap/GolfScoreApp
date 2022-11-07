@@ -8,6 +8,8 @@ let table = document.getElementById("table");
 let tHead = document.getElementById("tableHead");
 let tBodyD = document.getElementById("tableBodyDefaults");
 let tBodyP = document.getElementById("tableBodyPlayers");
+let navT   = document.getElementById("navTainer");
+let stickyT = document.getElementById("sticky");
 
 let tHeadL = document.getElementById("tableHeadLower");
 let tBodyDL = document.getElementById("tableBodyDefaultsLower");
@@ -63,7 +65,7 @@ let curCourse = 0;
 let curData = "";
 let curColor = "";
 let curTeeBox = 0;
-let cInfos, cNails, navT, cItems, itemTot, infoTot, largestInfo, navType, haburgerMenu, courseCards = [];
+let cInfos, cNails, cItems, itemTot, infoTot, largestInfo, navType, haburgerMenu, courseCards = [];
 
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 const summation = (accumulator, curr) => accumulator + curr;
@@ -82,6 +84,7 @@ function firstLoad(){
     loadTable();
     loadTeeboxs();
     initNav();
+    formatNav();
 }
 
 function loadTable(){
@@ -187,7 +190,6 @@ function initNav(){
     
     cInfos       = document.getElementsByClassName("cInfo");
     cNails       = document.getElementsByClassName("tNail");
-    navT         = document.getElementById("navTainer");
     haburgerMenu = document.getElementById("dropdown");
     cItems       = document.getElementsByClassName("courseItem");
     infoTot = 0, itemTot = 0;
@@ -202,8 +204,6 @@ function initNav(){
     for(i of cInfos)
         if(i.getBoundingClientRect().width > largestInfo)
             largestInfo = i.getBoundingClientRect().width;
-
-    formatNav();
 }
 
 function formatNav(){
@@ -393,7 +393,6 @@ function loadPlayers(){
     let tempData = [];
     tBodyP.innerHTML = "";
     tBodyPL.innerHTML = "";
-    console.log(players);
     for (let i in players) {
         addData("th", [players[i].name], ' class="playerName'+i+'" onblur="hideElement()" onfocus="popupElement(0, this)" oninput="ensureName(this)" onblur="changeName(this,'+i+')"', true);
         for(let ii = 0; ii < dataCount; ii++){
@@ -475,14 +474,14 @@ function addCourseCard(cNail, cInfo, cId){
         }
     }
     currentHtml = createLine('ul', currentHtml, 'class="cInfo"');
-    temp = createLine("img", cNail.image, "", cNail.name);
+    temp = createLine("img", cNail.image, '', cNail.name);
     temp += createLine("p", cNail.name, "");
     temp = createLine("div", temp, 'class="tNail"');
-    currentHtml = createLine('div', temp + currentHtml, 'class="courseItem cItem" onclick="changeCourse('+cId+')"')
+    currentHtml = createLine('div', temp + currentHtml, 'class="courseItem cItem" onclick="changeCourse('+cId+')"');
 
-    document.getElementById('navTainer').innerHTML += currentHtml;
+    
+    navT.innerHTML += currentHtml;
     courseCards.push(currentHtml);
-    // currentHtml += createLine('li',)
 }
 
 function changeCourse(val){
@@ -589,6 +588,8 @@ function updateAllSums(){
 function changeTee(val){
     curTeeBox = val;
     changeTeeColor();
+    loadTable();
+    loadPlayers();
 }
 
 function ensureName(that){
@@ -617,8 +618,8 @@ function addData(type, data, inserts, editableQ){
 
 function popupElement(type, that){
     let popElem;
-    if(type == 0)
         popElem = document.getElementById('popup-trash');
+        console.log(popElem);
     let tain = document.createElement('div');
     tain.appendChild(popElem);
     
@@ -632,6 +633,7 @@ function popupElement(type, that){
 
 function hideElement(){
     let temp = document.getElementById('popup-trash');
+    document.querySelector("body").appendChild(temp);
     if(pubScope){
         deleteRow(temp.value);
     }

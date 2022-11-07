@@ -30,6 +30,9 @@ table{
     color: aliceblue;
     z-index: 8;
 }
+.tNail img{
+    min-width: 100px;
+}
 #compactNav.onQ{
     transform: rotate(180deg);
 }
